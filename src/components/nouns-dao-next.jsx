@@ -208,7 +208,7 @@ const Proposals = ({ proposalIds }) => {
         id="proposals"
         value={proposalId ?? ""}
         onChange={(id) => {
-          setProposalId(id);
+          setProposalId(Number(id));
         }}
         options={[
           {
@@ -499,7 +499,7 @@ const VoteForm = ({ proposalId }) => {
                 }))
           }
           onSelect={(ids) => {
-            setTokenIds(ids);
+            setTokenIds(ids.map((id) => Number(id)));
           }}
           disabled={controlledTokenIds == null || isPending}
           style={{ width: "100%", height: "auto" }}
@@ -632,7 +632,7 @@ const Propose = () => {
                 }))
           }
           onSelect={(ids) => {
-            setTokenIds(ids);
+            setTokenIds(ids.map((id) => Number(id)));
           }}
           disabled={controlledTokenIds == null}
           style={{ width: "100%", height: "auto", marginBottom: "3.2rem" }}
