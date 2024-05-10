@@ -29,9 +29,12 @@ const DelegationToken = React.lazy(
 );
 
 const App = () => {
-  const [contractIdentifier, setContractIdentifier] = React.useState(
-    "nouns-auction-house",
-  );
+  const [contractIdentifier, setContractIdentifier] = React.useState(() => {
+    const customInitialIdentifier = new URLSearchParams(location.search).get(
+      "contract",
+    );
+    return customInitialIdentifier ?? "nouns-auction-house";
+  });
 
   const selectedContractAddress = useContractAddress(contractIdentifier);
 
@@ -43,35 +46,42 @@ const App = () => {
     <>
       <Header />
       <main style={{ marginTop: "3.2rem" }}>
-        <label htmlFor="contract">Contract</label>
-        <select
-          id="contract"
-          value={contractIdentifier}
-          onChange={(e) => {
-            setContractIdentifier(e.target.value);
-          }}
-          style={{ width: "100%" }}
-        >
-          {[
-            { value: "nouns-auction-house", label: "Auction House" },
-            { value: "nouns-token", label: "Nouns Token" },
-            { value: "nouns-dao", label: "DAO" },
-            isNounsGovernor
-              ? {
-                  value: "nouns-delegation-token",
-                  label: "Delegation token",
-                }
-              : null,
-          ]
-            .filter(Boolean)
-            .map((o) => (
-              <option key={o.value} value={o.value} disabled={o.disabled}>
-                {o.label}
-              </option>
-            ))}
-        </select>
         {selectedContractAddress != null && (
           <>
+            <label htmlFor="contract">Contract</label>
+            <select
+              id="contract"
+              value={contractIdentifier}
+              onChange={(e) => {
+                const searchParams = new URLSearchParams(location.search);
+                searchParams.set("contract", e.target.value);
+                history.replaceState(
+                  null,
+                  null,
+                  `${location.pathname}?${searchParams}`,
+                );
+                setContractIdentifier(e.target.value);
+              }}
+              style={{ width: "100%" }}
+            >
+              {[
+                { value: "nouns-auction-house", label: "Auction House" },
+                { value: "nouns-token", label: "Nouns Token" },
+                { value: "nouns-dao", label: "DAO" },
+                isNounsGovernor
+                  ? {
+                      value: "nouns-delegation-token",
+                      label: "Delegation token",
+                    }
+                  : null,
+              ]
+                .filter(Boolean)
+                .map((o) => (
+                  <option key={o.value} value={o.value} disabled={o.disabled}>
+                    {o.label}
+                  </option>
+                ))}
+            </select>
             <p data-small data-compact>
               <EtherscanLink
                 address={selectedContractAddress}
