@@ -515,7 +515,7 @@ const Propose = () => {
         ...actions.reduce(
           ([targets, values, signatures, calldatas], a) => [
             [...targets, a.target],
-            [...values, a.value],
+            [...values, Number(a.value)],
             [...signatures, a.signature],
             [...calldatas, a.calldata],
           ],
