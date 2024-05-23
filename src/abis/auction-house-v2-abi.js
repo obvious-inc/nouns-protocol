@@ -1,5 +1,14 @@
 export default [
   {
+    inputs: [
+      { internalType: "contract INounsToken", name: "_nouns", type: "address" },
+      { internalType: "address", name: "_weth", type: "address" },
+      { internalType: "uint256", name: "_duration", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -23,6 +32,31 @@ export default [
       { indexed: false, internalType: "bool", name: "extended", type: "bool" },
     ],
     name: "AuctionBid",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "nounId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "uint32",
+        name: "clientId",
+        type: "uint32",
+      },
+    ],
+    name: "AuctionBidWithClientId",
     type: "event",
   },
   {
@@ -124,6 +158,25 @@ export default [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: "uint256",
+        name: "nounId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "uint32",
+        name: "clientId",
+        type: "uint32",
+      },
+    ],
+    name: "AuctionSettledWithClientId",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: false,
         internalType: "uint256",
         name: "timeBuffer",
@@ -180,12 +233,41 @@ export default [
   },
   {
     inputs: [],
+    name: "MAX_TIME_BUFFER",
+    outputs: [{ internalType: "uint56", name: "", type: "uint56" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "auction",
     outputs: [
-      { internalType: "uint256", name: "nounId", type: "uint256" },
-      { internalType: "uint256", name: "amount", type: "uint256" },
-      { internalType: "uint256", name: "startTime", type: "uint256" },
-      { internalType: "uint256", name: "endTime", type: "uint256" },
+      {
+        components: [
+          { internalType: "uint96", name: "nounId", type: "uint96" },
+          { internalType: "uint128", name: "amount", type: "uint128" },
+          { internalType: "uint40", name: "startTime", type: "uint40" },
+          { internalType: "uint40", name: "endTime", type: "uint40" },
+          { internalType: "address payable", name: "bidder", type: "address" },
+          { internalType: "bool", name: "settled", type: "bool" },
+        ],
+        internalType: "struct INounsAuctionHouseV2.AuctionV2View",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "auctionStorage",
+    outputs: [
+      { internalType: "uint96", name: "nounId", type: "uint96" },
+      { internalType: "uint32", name: "clientId", type: "uint32" },
+      { internalType: "uint128", name: "amount", type: "uint128" },
+      { internalType: "uint40", name: "startTime", type: "uint40" },
+      { internalType: "uint40", name: "endTime", type: "uint40" },
       { internalType: "address payable", name: "bidder", type: "address" },
       { internalType: "bool", name: "settled", type: "bool" },
     ],
@@ -194,6 +276,23 @@ export default [
   },
   {
     inputs: [{ internalType: "uint256", name: "nounId", type: "uint256" }],
+    name: "biddingClient",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "nounId", type: "uint256" }],
+    name: "createBid",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "nounId", type: "uint256" },
+      { internalType: "uint32", name: "clientId", type: "uint32" },
+    ],
     name: "createBid",
     outputs: [],
     stateMutability: "payable",
@@ -208,16 +307,93 @@ export default [
   },
   {
     inputs: [
-      { internalType: "contract INounsToken", name: "_nouns", type: "address" },
-      { internalType: "address", name: "_weth", type: "address" },
-      { internalType: "uint256", name: "_timeBuffer", type: "uint256" },
-      { internalType: "uint256", name: "_reservePrice", type: "uint256" },
+      { internalType: "uint256", name: "auctionCount", type: "uint256" },
+    ],
+    name: "getPrices",
+    outputs: [{ internalType: "uint256[]", name: "prices", type: "uint256[]" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "auctionCount", type: "uint256" },
+      { internalType: "bool", name: "skipEmptyValues", type: "bool" },
+    ],
+    name: "getSettlements",
+    outputs: [
+      {
+        components: [
+          { internalType: "uint32", name: "blockTimestamp", type: "uint32" },
+          { internalType: "uint256", name: "amount", type: "uint256" },
+          { internalType: "address", name: "winner", type: "address" },
+          { internalType: "uint256", name: "nounId", type: "uint256" },
+          { internalType: "uint32", name: "clientId", type: "uint32" },
+        ],
+        internalType: "struct INounsAuctionHouseV2.Settlement[]",
+        name: "settlements",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "startId", type: "uint256" },
+      { internalType: "uint256", name: "endId", type: "uint256" },
+      { internalType: "bool", name: "skipEmptyValues", type: "bool" },
+    ],
+    name: "getSettlements",
+    outputs: [
+      {
+        components: [
+          { internalType: "uint32", name: "blockTimestamp", type: "uint32" },
+          { internalType: "uint256", name: "amount", type: "uint256" },
+          { internalType: "address", name: "winner", type: "address" },
+          { internalType: "uint256", name: "nounId", type: "uint256" },
+          { internalType: "uint32", name: "clientId", type: "uint32" },
+        ],
+        internalType: "struct INounsAuctionHouseV2.Settlement[]",
+        name: "settlements",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "startId", type: "uint256" },
+      { internalType: "uint256", name: "endTimestamp", type: "uint256" },
+      { internalType: "bool", name: "skipEmptyValues", type: "bool" },
+    ],
+    name: "getSettlementsFromIdtoTimestamp",
+    outputs: [
+      {
+        components: [
+          { internalType: "uint32", name: "blockTimestamp", type: "uint32" },
+          { internalType: "uint256", name: "amount", type: "uint256" },
+          { internalType: "address", name: "winner", type: "address" },
+          { internalType: "uint256", name: "nounId", type: "uint256" },
+          { internalType: "uint32", name: "clientId", type: "uint32" },
+        ],
+        internalType: "struct INounsAuctionHouseV2.Settlement[]",
+        name: "settlements",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint192", name: "_reservePrice", type: "uint192" },
+      { internalType: "uint56", name: "_timeBuffer", type: "uint56" },
       {
         internalType: "uint8",
         name: "_minBidIncrementPercentage",
         type: "uint8",
       },
-      { internalType: "uint256", name: "_duration", type: "uint256" },
     ],
     name: "initialize",
     outputs: [],
@@ -271,7 +447,7 @@ export default [
   {
     inputs: [],
     name: "reservePrice",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [{ internalType: "uint192", name: "", type: "uint192" }],
     stateMutability: "view",
     type: "function",
   },
@@ -290,7 +466,26 @@ export default [
   },
   {
     inputs: [
-      { internalType: "uint256", name: "_reservePrice", type: "uint256" },
+      {
+        components: [
+          { internalType: "uint32", name: "blockTimestamp", type: "uint32" },
+          { internalType: "uint256", name: "amount", type: "uint256" },
+          { internalType: "address", name: "winner", type: "address" },
+          { internalType: "uint256", name: "nounId", type: "uint256" },
+        ],
+        internalType: "struct INounsAuctionHouseV2.SettlementNoClientId[]",
+        name: "settlements",
+        type: "tuple[]",
+      },
+    ],
+    name: "setPrices",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint192", name: "_reservePrice", type: "uint192" },
     ],
     name: "setReservePrice",
     outputs: [],
@@ -298,7 +493,7 @@ export default [
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "_timeBuffer", type: "uint256" }],
+    inputs: [{ internalType: "uint56", name: "_timeBuffer", type: "uint56" }],
     name: "setTimeBuffer",
     outputs: [],
     stateMutability: "nonpayable",
@@ -321,7 +516,7 @@ export default [
   {
     inputs: [],
     name: "timeBuffer",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [{ internalType: "uint56", name: "", type: "uint56" }],
     stateMutability: "view",
     type: "function",
   },
@@ -335,6 +530,16 @@ export default [
   {
     inputs: [],
     name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "startId", type: "uint256" },
+      { internalType: "uint256", name: "endId", type: "uint256" },
+    ],
+    name: "warmUpSettlementState",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

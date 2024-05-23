@@ -11,7 +11,7 @@ import {
 import {
   DEFAULT_MAINNET_NOUNS_TOKEN_ADDRESS,
   DEFAULT_SEPOLIA_NOUNS_TOKEN_ADDRESS,
-} from "./constants.js";
+} from "./env.js";
 import useContractAddress, {
   Provider as ContractAddressProvider,
 } from "./hooks/address.jsx";

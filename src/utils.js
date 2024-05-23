@@ -1,6 +1,8 @@
 import { parseAbiItem, decodeAbiParameters } from "viem";
 
 export const decodeCalldata = (action) => {
+  if (action.signature === "") return null;
+
   try {
     const { name, inputs: inputTypes } = parseAbiItem(
       `function ${action.signature}`,
@@ -9,6 +11,7 @@ export const decodeCalldata = (action) => {
     const inputs = decodeAbiParameters(inputTypes, action.calldata);
     return { functionName: name, inputs, inputTypes };
   } catch (e) {
+    console.warn("Error decoding calldata", e);
     return null;
   }
 };

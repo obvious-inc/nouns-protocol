@@ -176,7 +176,7 @@ const Proposals = ({ proposalIds }) => {
         id="proposals"
         value={proposalId ?? ""}
         onChange={(id) => {
-          setProposalId(id);
+          setProposalId(Number(id));
         }}
         options={[
           {

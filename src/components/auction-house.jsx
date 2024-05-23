@@ -1,6 +1,7 @@
 import { formatEther, parseEther } from "viem";
 import React from "react";
 import { useAccount } from "wagmi";
+import { APP_CLIENT_ID } from "../env.js";
 import {
   useAuctionHouseRead,
   useAuctionHouseWrite,
@@ -18,19 +19,19 @@ const useAuction = () => {
 
   if (auction == null) return null;
 
-  const [
+  const {
     nounId,
     amount,
-    startTimestamp,
-    endTimestamp,
-    bidderAddress,
-    isSettled,
-  ] = auction;
+    startTime,
+    endTime,
+    bidder: bidderAddress,
+    settled: isSettled,
+  } = auction;
 
   return {
     nounId: Number(nounId),
-    startDate: new Date(Number(startTimestamp) * 1000),
-    endDate: new Date(Number(endTimestamp) * 1000),
+    startDate: new Date(Number(startTime) * 1000),
+    endDate: new Date(Number(endTime) * 1000),
     bidderAddress,
     bidAmount: amount,
     reservePrice,
@@ -70,10 +71,11 @@ const Auction = () => {
 
   const bidValue = getBidValue();
 
+  console.log(typeof auction?.nounId, typeof APP_CLIENT_ID);
   const { call: createBid, status: createBidStatus } = useAuctionHouseWrite(
     "createBid",
     {
-      args: [auction?.nounId],
+      args: [auction?.nounId, APP_CLIENT_ID],
       value: bidValue,
       enabled:
         connectedAccount != null &&

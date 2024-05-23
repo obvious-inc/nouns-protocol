@@ -1,6 +1,7 @@
 import { isAddress, formatEther } from "viem";
 import React from "react";
 import { useAccount, useBlockNumber, usePublicClient } from "wagmi";
+import { APP_CLIENT_ID } from "../env.js";
 import { decodeCalldata, formatSolidityValue } from "../utils.js";
 import useAddress from "../hooks/address.jsx";
 import {
@@ -463,13 +464,24 @@ const VoteForm = ({ proposalId }) => {
   const { call: castVote, status: castVoteCallStatus } = useNounsDaoWrite(
     "castRefundableVote",
     {
-      args: [selectedTokenIds, proposalId, Number(support)],
+      args: [
+        selectedTokenIds.map((id) => BigInt(id)),
+        BigInt(proposalId),
+        Number(support),
+        APP_CLIENT_ID,
+      ],
       enabled: selectedTokenIds.length > 0 && support != null,
     },
   );
   const { call: castVoteWithReason, status: castVoteWithReasonCallStatus } =
     useNounsDaoWrite("castRefundableVoteWithReason", {
-      args: [selectedTokenIds, proposalId, Number(support), reason],
+      args: [
+        selectedTokenIds.map((id) => BigInt(id)),
+        BigInt(proposalId),
+        Number(support),
+        reason,
+        APP_CLIENT_ID,
+      ],
       enabled: selectedTokenIds.length > 0 && support != null,
     });
 
@@ -499,7 +511,7 @@ const VoteForm = ({ proposalId }) => {
                 }))
           }
           onSelect={(ids) => {
-            setTokenIds(ids.map((id) => Number(id)));
+            setTokenIds(ids);
           }}
           disabled={controlledTokenIds == null || isPending}
           style={{ width: "100%", height: "auto" }}
@@ -569,17 +581,18 @@ const Propose = () => {
     "propose",
     {
       args: [
-        selectedTokenIds,
+        selectedTokenIds.map((id) => BigInt(id)),
         ...actions.reduce(
           ([targets, values, signatures, calldatas], a) => [
             [...targets, a.target],
-            [...values, a.value],
+            [...values, a.value === "" ? 0n : BigInt(a.value)],
             [...signatures, a.signature],
             [...calldatas, a.calldata],
           ],
           [[], [], [], []],
         ),
         description,
+        APP_CLIENT_ID,
       ],
       enabled: description.trim() !== "",
     },
@@ -615,7 +628,7 @@ const Propose = () => {
           e.preventDefault();
           await propose();
           setDescription("");
-          setTokenIds("");
+          setTokenIds([]);
           setActions([{ target: "", signature: "", calldata: "", value: "" }]);
         }}
       >
@@ -632,7 +645,7 @@ const Propose = () => {
                 }))
           }
           onSelect={(ids) => {
-            setTokenIds(ids.map((id) => Number(id)));
+            setTokenIds(ids);
           }}
           disabled={controlledTokenIds == null}
           style={{ width: "100%", height: "auto", marginBottom: "3.2rem" }}
