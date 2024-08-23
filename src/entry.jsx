@@ -5,7 +5,7 @@ import { WagmiProvider, http, createConfig as createWagmiConfig } from "wagmi";
 import { mainnet, sepolia } from "wagmi/chains";
 import {
   walletConnect,
-  // coinbaseWallet,
+  coinbaseWallet,
   safe,
   injected,
 } from "wagmi/connectors";
@@ -19,7 +19,7 @@ const wagmiConfig = createWagmiConfig({
     walletConnect({
       projectId: import.meta.env.PUBLIC_WALLET_CONNECT_PROJECT_ID,
     }),
-    // coinbaseWallet({ appName: "Nouns Camp" }),
+    coinbaseWallet({ appName: "Nouns Protocol" }),
     safe(),
     injected(),
   ],
@@ -30,9 +30,6 @@ const wagmiConfig = createWagmiConfig({
     [sepolia.id]: http(
       `https://eth-sepolia.g.alchemy.com/v2/${import.meta.env.PUBLIC_ALCHEMY_API_KEY}`,
     ),
-    // [goerli.id]: http(
-    //   `https://eth-goerli.g.alchemy.com/v2/${import.meta.env.PUBLIC_ALCHEMY_API_KEY}`,
-    // ),
   },
   batch: {
     multicall: {
