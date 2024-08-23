@@ -182,7 +182,7 @@ const BrowseTokens = () => {
 
   const { data: auction } = useAuctionHouseRead("auction");
 
-  const currentNounId = auction?.[0];
+  const currentNounId = auction?.nounId;
 
   const { data: owner, error: ownerOfError } = useNounsTokenRead("ownerOf", {
     args: [selectedTokenId],
