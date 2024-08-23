@@ -81,5 +81,4 @@ export const Provider = ({ nounsAddress, children }) => {
   );
 };
 
-// eslint-disable-next-line
 export default useAddress;
