@@ -16,16 +16,11 @@
   --border: hsl(0 0% 0% / 25%);
   --small: 0.875em;
 
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.625em;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
   font-synthesis: none;
 }
 
@@ -98,7 +93,7 @@ dd[data-fullwidth] {
 hr {
   margin: 1.6rem 0;
   border: 0;
-  border-top: 1px solid var(--border);
+  border-top: 2px solid var(--border);
 }
 
 button,
@@ -106,7 +101,7 @@ input,
 textarea,
 select {
   color: inherit;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 0.3rem;
   background: none;
   min-height: 2em;
@@ -201,7 +196,7 @@ img {
 h1 {
   line-height: 1.2;
   padding-bottom: 0.8rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
 }
 
 pre code {
@@ -212,8 +207,8 @@ pre code {
   color: var(--text-dimmed);
   background: var(--background-modifier);
   line-height: 1.4;
-  font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono",
-    Courier, monospace;
+  /* font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono",
+    Courier, monospace; */
   font-size: 0.75em;
   user-select: text;
 }
@@ -227,7 +222,7 @@ pre code {
 
 @media (min-width: 600px) {
   body {
-    width: 58rem;
+    width: 64rem;
     max-width: 100%;
     padding: 4em 1em;
   }
